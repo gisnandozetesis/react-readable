@@ -22,9 +22,56 @@ export const getPosts = (category) => {
     .then(res => res.json());
 }
 
+export const savePost = (post) => {
+    if (!post.id) {
+        post.id = Date.now().toString();
+        return addPost(post);
+    } else {
+        return updatePost(post);
+    }
+}
+
+const addPost = (post) => {
+    return fetch(`${api}/posts`, { 
+        method: 'POST',
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json'            
+        },
+        body: JSON.stringify({
+            id: post.id,
+            timestamp: post.timestamp,
+            title: post.title,
+            body: post.body,
+            author: post.author,
+            category: post.category
+        })
+    })
+    .then(res => res.json());
+}
+
+const updatePost = (post) => {
+    return fetch(`${api}/posts/${post.id}`, { 
+        method: 'PUT',
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json'            
+        },
+        body: JSON.stringify({
+            title: post.title,
+            body: post.body
+        })
+    })
+    .then(res => res.json());
+}
+
+
+
 
 export const getComments = (postId) => {
     return fetch(`${api}/posts/${postId}/comments`, { headers })
     .then(res => res.json());
 }
+
+
 

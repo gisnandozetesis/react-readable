@@ -10,12 +10,12 @@ import CommentList from './CommentList';
 class Post extends Component {
 
     render() {
-        const { post } = this.props;
+        const { post, editPostCallback } = this.props;
 
         return (
             <div>
                 <div>
-                    <a href="#"><h2>{post.title}</h2></a>
+                    <a href="#" onClick={editPostCallback}><h2>{post.title}</h2></a>
                 </div>
 
                 <div>
@@ -30,7 +30,7 @@ class Post extends Component {
                     <a href="#"><Icon icon={thumbsUp} size={32} /></a>
                     <span style={{fontSize: 20}}>{`${post.voteScore}`}</span>
                     <a href="#"><Icon icon={thumbsDown} size={32} /></a>
-                    <a href="#" style={{ marginLeft: "20px"}} title="Edit"><Icon icon={edit} size={32} /></a>
+                    <a href="#" onClick={editPostCallback} style={{ marginLeft: "20px"}} title="Edit"><Icon icon={edit} size={32} /></a>
                     <a href="#" style={{ marginLeft: "20px"}} title="Delete"><Icon icon={trash} size={32} /></a>
                 </div>
 

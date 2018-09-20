@@ -4,7 +4,7 @@ import "./App.css"
 import * as API from '../utils/api';
 import Categories from './Categories';
 import Post from './Post';
-import { postSearchResult } from '../actions/post';
+import { postSearchResult, addOrUpdatePost } from '../actions/post';
 import Modal from 'react-modal';
 
 const customStyles = {
@@ -18,7 +18,7 @@ const customStyles = {
   }
 };
 
-//Modal.setAppElement(document.getElementById('root'));
+Modal.setAppElement(document.getElementById('root'));
 
 class App extends Component {
 
@@ -27,12 +27,15 @@ class App extends Component {
 
     this.state = {
       posts: [],
+      editingPost: null,
       modalIsOpen: false
     }
 
-    this.openModal = this.openModal.bind(this);
+    this.newPost = this.newPost.bind(this);
+    this.editPost = this.editPost.bind(this);
     this.afterOpenModal = this.afterOpenModal.bind(this);
     this.closeModal = this.closeModal.bind(this);    
+    this.savePost = this.savePost.bind(this);    
   }
 
 
@@ -47,21 +50,74 @@ class App extends Component {
       })
   }
 
-  openModal() {
-    this.setState({modalIsOpen: true});
+  newPost() {
+    this.setState({
+        modalIsOpen: true,
+        editingPost: null
+      });
   }
+
+  editPost(post) {
+    this.setState({
+      modalIsOpen: true,
+      editingPost: post
+    });
+  }
+
  
   afterOpenModal() {
-    // references are now sync'd and can be accessed.
-    this.subtitle.style.color = '#f00';
+    const { editingPost } = this.state;
+
+    this.inputTitle.value = editingPost && editingPost.title;
+    this.inputBody.value = editingPost && editingPost.body;
+    if (this.inputAuthor) {
+      this.inputAuthor.value = "gisnando";
+    }
   }
+
+
  
   closeModal() {
     this.setState({modalIsOpen: false});
   }
 
+  savePost() {
+
+    const { addOrUpdatePostProp } = this.props;
+
+    const savingPost = this.state.editingPost || {};
+
+    savingPost.title = this.inputTitle.value;
+
+    savingPost.body = this.inputBody.value;
+
+    //Se for um novo post atribui os dados complementares
+    if (!savingPost.id) {
+
+      savingPost.timestamp = Date.now();
+
+      savingPost.author = this.inputAuthor.value;
+
+      savingPost.category = this.selectCategory.value;
+    }
+
+    API.savePost(savingPost).then(returning => {
+      
+      console.log("returning", returning);
+      console.log("keys", Object.keys(returning));
+
+      addOrUpdatePostProp(returning);
+
+    })
+  }
+
   render() {
-    const { posts } = this.props;
+    const { editingPost } = this.state;
+    const { posts, categories } = this.props;
+    const commonStyle = {
+      width: "100%",
+      marginBottom: "10px"
+    }
 
     return (
       <div>
@@ -70,12 +126,12 @@ class App extends Component {
         </div>
         <div className="Main">
 
-          <button style={{ marginTop: "10px"}} onClick={this.openModal}>New Post</button>
+          <button style={{ marginTop: "10px" }} onClick={this.newPost}>New Post</button>
 
           <hr />
 
           {posts.map(p => (
-            <Post key={p.id} post={p} />
+            <Post key={p.id} post={p} editPostCallback={() => this.editPost(p)} />
           ))}
 
           <Modal
@@ -85,15 +141,30 @@ class App extends Component {
             style={customStyles}
             contentLabel="Example Modal"
           >
-            <h2 ref={subtitle => this.subtitle = subtitle}>Hello</h2>
-            <button onClick={this.closeModal}>close</button>
-            <div>I am a modal</div>
+            <h2 ref={subtitle => this.subtitle = subtitle}>Post</h2>
             <form>
-              <input />
-              <button>tab navigation</button>
-              <button>stays</button>
-              <button>inside</button>
-              <button>the modal</button>
+              <div>
+                <div><input type='text' style={commonStyle} placeholder='Title' ref={(inputTitle) => this.inputTitle = inputTitle} /></div>
+                <div><textarea placeholder='Body' style={commonStyle} rows="8" cols="50" ref={(inputBody) => this.inputBody = inputBody} /></div>
+                {
+                  !editingPost && (<div><input type='text' placeholder='Author' style={commonStyle} ref={(inputAuthor) => this.inputAuthor = inputAuthor} /></div>)
+                }
+                {
+                  !editingPost && (
+                    <div>
+                    <select style={commonStyle} ref={(selectCategory) => this.selectCategory = selectCategory}>
+                      {
+                        categories && categories.map(c => (
+                          <option key={c.path} value={c.path}>{c.name}</option>
+                        ))
+                      }
+                    </select>
+                  </div>
+                  )
+                }
+              </div>
+              <button onClick={this.savePost}>Ok</button>
+              <button onClick={this.closeModal}>Cancel</button>
             </form>
           </Modal>
 
@@ -110,16 +181,25 @@ class App extends Component {
 
 function mapDispatchToProps(dispatch) {
   return {
-    postSearchResultProp: (data) => dispatch(postSearchResult(data))
+    postSearchResultProp: (data) => dispatch(postSearchResult(data)),
+    addOrUpdatePostProp: (post) => dispatch(addOrUpdatePost(post))
   }
 }
 
 
 
-function mapStateToProps({ postReducer }) {
+function mapStateToProps({ postReducer, categoryReducer }) {
   const { posts } = postReducer;
+  const { categories } = categoryReducer;
+
+  const postsArray = Object.keys(posts).reduce((postsResult, postId) => {
+    postsResult.push(posts[postId]);
+    return postsResult;
+  }, [])
+
   return {
-    posts
+    posts: postsArray, 
+    categories
   };
 }
 

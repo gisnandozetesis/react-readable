@@ -1,22 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as API from '../utils/api';
-import { changeCurrentCategory } from '../actions/post';
+import { changeCurrentCategory, categorySearchResult } from '../actions/post';
 
 class Categories extends Component {
 
-
-    state = {
-        categories: []
-      }
-    
       componentDidMount() {
+        const { categorySearchResultProp } = this.props;
+
         API.getAllCategories()
           .then(categories => {
-            this.setState({
-              categories
-            });
-        
+            categorySearchResultProp(categories);
           })
       }
     
@@ -32,10 +26,13 @@ class Categories extends Component {
       }
     
       render() {
+        const { categories } = this.props;
+
         return (
+
             <ul>
               {
-                this.state.categories && this.state.categories.map(c => (
+                categories && categories.map(c => (
                   <li key={c.path} value={c.path}>
                     <a key={c.path} onClick={() => this.changeCategory(c.path)} href="#">{c.name}</a>
                   </li>
@@ -47,12 +44,22 @@ class Categories extends Component {
 }
 
 
+
+function mapStateToProps({ categoryReducer }) {
+  const { categories } = categoryReducer;
+  return {
+    categories
+  };
+}
+
+
 function mapDispatchToProps(dispatch) {
   return {
-    changeCurrentCategoryProp: (newCategory, posts) => dispatch(changeCurrentCategory(newCategory, posts))
+    changeCurrentCategoryProp: (newCategory, posts) => dispatch(changeCurrentCategory(newCategory, posts)),
+    categorySearchResultProp: (categories) => dispatch(categorySearchResult(categories))
   }
 }
 
 
 
-export default connect(null, mapDispatchToProps)(Categories);
+export default connect(mapStateToProps, mapDispatchToProps)(Categories);
