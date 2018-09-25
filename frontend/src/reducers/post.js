@@ -1,11 +1,12 @@
 import {
-    POST_SEARCH_RESULT, CATEGORY_SEARCH_RESULT, CATEGORY_CHANGE_CURRENT, COMMENT_SEARCH_RESULT, POST_ADD_OR_UPDATE
+    POST_SEARCH_RESULT, CATEGORY_SEARCH_RESULT, CATEGORY_CHANGE_CURRENT, COMMENT_SEARCH_RESULT, POST_ADD_OR_UPDATE, POST_OPEN_CLOSE_POPUP, POST_DELETE
 } from '../actions/post';
 import { combineReducers } from 'redux';
 
 
 const initialPostState = {
-    posts: {}
+    posts: {},
+    editingPost: null
 }
 
 function categoryReducer(state = {}, action) {
@@ -52,6 +53,16 @@ function postReducer(state = initialPostState, action) {
                 posts: postState
             };
 
+        case POST_OPEN_CLOSE_POPUP :
+
+            const { editingPost } = action;
+
+            return {
+                ...state,
+                editingPost
+            };
+
+
         case POST_ADD_OR_UPDATE :
 
             const { post } = action;
@@ -62,6 +73,16 @@ function postReducer(state = initialPostState, action) {
                     ...state.posts,
                     [post.id]: post
                 }
+            };
+
+        case POST_DELETE :
+
+            const { postId } = action;
+
+            delete state.posts[postId];
+
+            return {
+                ...state
             };
 
         case CATEGORY_CHANGE_CURRENT :

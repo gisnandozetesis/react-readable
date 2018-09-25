@@ -31,6 +31,30 @@ export const savePost = (post) => {
     }
 }
 
+export const votePost = (postId, option) => {
+    return fetch(`${api}/posts/${postId}`, { 
+        method: 'POST',
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json'            
+        },
+        body: JSON.stringify({
+            option
+        })
+    })
+    .then(res => res.json());
+}
+
+export const deletePost = (postId) => {
+    return fetch(`${api}/posts/${postId}`, { 
+        method: 'DELETE',
+        headers
+    })
+    .then(res => res.json());
+}
+
+
+
 const addPost = (post) => {
     return fetch(`${api}/posts`, { 
         method: 'POST',
