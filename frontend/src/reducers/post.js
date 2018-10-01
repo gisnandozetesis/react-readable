@@ -1,5 +1,7 @@
 import {
-    POST_SEARCH_RESULT, CATEGORY_SEARCH_RESULT, CATEGORY_CHANGE_CURRENT, COMMENT_SEARCH_RESULT, POST_ADD_OR_UPDATE, POST_OPEN_CLOSE_POPUP, POST_DELETE
+    CATEGORY_SEARCH_RESULT, CATEGORY_CHANGE_CURRENT, 
+    COMMENT_SEARCH_RESULT, COMMENT_OPEN_CLOSE_POPUP, COMMENT_ADD_OR_UPDATE, COMMENT_DELETE,
+    POST_SEARCH_RESULT, POST_OPEN_CLOSE_POPUP, POST_ADD_OR_UPDATE, POST_DELETE
 } from '../actions/post';
 import { combineReducers } from 'redux';
 
@@ -97,15 +99,57 @@ function postReducer(state = initialPostState, action) {
 }
 
 
-function commentReducer(state = {}, action) {
+function commentReducer(state = { comments: {}, editingComment: null }, action) {
 
     switch (action.type) {
 
         case COMMENT_SEARCH_RESULT :
+            const commentState = {};
+
+            const { comments } = action;
+
+            comments.forEach(c => commentState[c.id] = c);
+            
+            return {
+                ...state,
+                comments: {
+                    ...state.comments,
+                    [action.postId]: commentState
+                }
+            };
+
+        case COMMENT_OPEN_CLOSE_POPUP :
+
+            const { editingComment } = action;
 
             return {
                 ...state,
-                [action.postId]: action.comments
+                editingComment
+            };
+
+        case COMMENT_ADD_OR_UPDATE :
+
+            const { comment } = action;
+
+            return {
+                ...state,
+                comments: {
+                    ...state.comments,
+                    [comment.parentId]: {
+                        ...state.comments[comment.parentId],
+                        [comment.id]: comment
+                    }
+                }
+            };
+
+        case COMMENT_DELETE :
+
+            const { postId, commentId } = action;
+
+            delete state.comments[postId][commentId];
+
+            return {
+                ...state
             };
 
         default :

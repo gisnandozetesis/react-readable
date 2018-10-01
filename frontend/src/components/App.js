@@ -6,6 +6,7 @@ import Categories from './Categories';
 import Post from './Post';
 import { postSearchResult, openOrClosePostPopup } from '../actions/post';
 import PostPopup from './PostPopup';
+import CommentPopup from './CommentPopup';
 
 class App extends Component {
 
@@ -58,6 +59,8 @@ class App extends Component {
           ))}
 
           <PostPopup />
+
+          <CommentPopup />
 
         </div>
 

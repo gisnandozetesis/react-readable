@@ -12,6 +12,7 @@ import CommentList from './CommentList';
 
 class Post extends Component {
 
+
     votePost(post, option) {
         const { addOrUpdatePostProp } = this.props;
 
