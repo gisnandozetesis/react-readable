@@ -21,7 +21,8 @@ class CommentList extends Component {
         const { commentSearchResultProp } = this.props;
 
         API.getComments(postId).then(comments => {
-            this.setState({ comments });
+
+            comments.sort((a,b) => (a.voteScore > b.voteScore) ? -1 : ((b.voteScore > a.voteScore) ? 1 : 0));
 
             commentSearchResultProp(postId, comments);
         });

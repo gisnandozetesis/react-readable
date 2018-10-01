@@ -18,6 +18,8 @@ class App extends Component {
     }
 
     this.newPost = this.newPost.bind(this);
+    this.sortByDate = this.sortByDate.bind(this);
+    this.sortByVote = this.sortByVote.bind(this);
   }
 
   componentDidMount() {
@@ -25,6 +27,9 @@ class App extends Component {
 
     API.getAllPosts()
       .then(posts => {
+
+        posts.sort((a,b) => (a.voteScore > b.voteScore) ? -1 : ((b.voteScore > a.voteScore) ? 1 : 0));
+
         postSearchResultProp(posts);
     
       })
@@ -35,6 +40,24 @@ class App extends Component {
 
     openOrClosePostPopupProp({});
   }
+
+  sortByDate() {
+    const { posts, postSearchResultProp } = this.props;
+
+    posts.sort((a,b) => (a.timestamp > b.timestamp) ? -1 : ((b.timestamp > a.timestamp) ? 1 : 0));
+
+    postSearchResultProp(posts);
+  }
+
+  sortByVote() {
+    const { posts, postSearchResultProp } = this.props;
+
+    posts.sort((a,b) => (a.voteScore > b.voteScore) ? -1 : ((b.voteScore > a.voteScore) ? 1 : 0));
+
+    postSearchResultProp(posts);
+  }
+
+
 
   render() {
     const { posts } = this.props;
@@ -49,8 +72,12 @@ class App extends Component {
           <Categories />
         </div>
         <div className="Main">
+          <div style={{ marginTop: "10px" }}>
+            <button onClick={this.newPost}>New Post</button>
+            <button onClick={this.sortByVote}>Order by Vote</button>
+            <button onClick={this.sortByDate}>Order by Date</button>
+          </div>
 
-          <button style={{ marginTop: "10px" }} onClick={this.newPost}>New Post</button>
 
           <hr />
 
