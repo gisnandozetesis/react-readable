@@ -11,18 +11,18 @@ class CommentList extends Component {
 
     newComment() {
         const { post, openOrCloseCommentPopupProp } = this.props;
-    
+
         openOrCloseCommentPopupProp({
             parentId: post.id
         });
     }
-    
+
     listComments(postId) {
         const { commentSearchResultProp } = this.props;
 
         API.getComments(postId).then(comments => {
 
-            comments.sort((a,b) => (a.voteScore > b.voteScore) ? -1 : ((b.voteScore > a.voteScore) ? 1 : 0));
+            comments.sort((a, b) => (a.voteScore > b.voteScore) ? -1 : ((b.voteScore > a.voteScore) ? 1 : 0));
 
             commentSearchResultProp(postId, comments);
         });
@@ -35,12 +35,12 @@ class CommentList extends Component {
         return (
             <div>
                 {!comments && (<a href="#" onClick={() => this.listComments(post.id)}>{`${post.commentCount} comments`}</a>)}
-                {comments && 
+                {comments &&
                     comments.map(comment => (
                         <Comment key={comment.id} comment={comment} />
                     ))
                 }
-                
+
                 <div>
                     <button onClick={() => this.newComment()}>Add Comment</button>
                 </div>
@@ -57,19 +57,19 @@ function mapStateToProps({ commentReducer }, ownProps) {
     const commentsArray = comments && Object.keys(comments).reduce((commentsResult, commentId) => {
         commentsResult.push(comments[commentId]);
         return commentsResult;
-      }, []);
+    }, []);
 
     return {
-      comments: commentsArray
+        comments: commentsArray
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-      commentSearchResultProp: (postId, comments) => dispatch(commentSearchResult(postId, comments)),
-      openOrCloseCommentPopupProp: (comment) => dispatch(openOrCloseCommentPopup(comment))
+        commentSearchResultProp: (postId, comments) => dispatch(commentSearchResult(postId, comments)),
+        openOrCloseCommentPopupProp: (comment) => dispatch(openOrCloseCommentPopup(comment))
     }
-  }
-  
-  
+}
+
+
 export default connect(mapStateToProps, mapDispatchToProps)(CommentList);

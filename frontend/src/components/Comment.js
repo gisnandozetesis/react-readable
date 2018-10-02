@@ -22,7 +22,7 @@ class Comment extends Component {
 
     editComment(comment) {
         const { openOrCloseCommentPopupProp } = this.props;
-    
+
         openOrCloseCommentPopupProp(comment);
     }
 
@@ -38,7 +38,7 @@ class Comment extends Component {
         const { comment } = this.props;
 
         return (
-            <div style={{backgroundColor: "#EEEEEE", padding: "10px", margin: "10px"}} key={comment.id}>
+            <div style={{ backgroundColor: "#EEEEEE", padding: "10px", margin: "10px" }} key={comment.id}>
 
                 <div>{comment.body}</div>
 
@@ -46,12 +46,12 @@ class Comment extends Component {
                     <small>{`Author: ${comment.author} - Date: ${new Date(comment.timestamp).toLocaleString()}`}</small>
                 </div>
 
-                <div style={{verticalAlign: "top"}}>
+                <div style={{ verticalAlign: "top" }}>
                     <a href="#" onClick={() => this.voteComment(comment, "upVote")}><Icon icon={thumbsUp} size={32} /></a>
-                    <span style={{fontSize: 20}}>{`${comment.voteScore}`}</span>
+                    <span style={{ fontSize: 20 }}>{`${comment.voteScore}`}</span>
                     <a href="#" onClick={() => this.voteComment(comment, "downVote")}><Icon icon={thumbsDown} size={32} /></a>
-                    <a href="#" onClick={() => this.editComment(comment)} style={{ marginLeft: "20px"}} title="Edit"><Icon icon={edit} size={32} /></a>
-                    <a href="#" onClick={() => this.deleteComment(comment)} style={{ marginLeft: "20px"}} title="Delete"><Icon icon={trash} size={32} /></a>
+                    <a href="#" onClick={() => this.editComment(comment)} style={{ marginLeft: "20px" }} title="Edit"><Icon icon={edit} size={32} /></a>
+                    <a href="#" onClick={() => this.deleteComment(comment)} style={{ marginLeft: "20px" }} title="Delete"><Icon icon={trash} size={32} /></a>
                 </div>
             </div>
         );
@@ -66,6 +66,6 @@ function mapDispatchToProps(dispatch) {
         deleteCommentProp: (postId, commentId) => dispatch(deleteComment(postId, commentId))
     }
 }
-  
+
 
 export default connect(null, mapDispatchToProps)(Comment);
